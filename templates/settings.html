@@ -3,5 +3,59 @@
 {% block content %}
 <div class="container mt-5">
   <h1>Settings Page</h1>
+  <form method="POST" action="/add_feed">
+    <div class="form-group">
+      <label for="feedUrl">Add RSS Feed URL:</label>
+      <input type="text" class="form-control" id="feedUrl" name="feedUrl" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Feed (Default: 5 articles)</button>
+  </form>
+
+  <h2 class="mt-5">Current Feeds</h2>
+  <ul class="list-group">
+    {% for feed in feeds %}
+      <li class="list-group-item feed-item" data-url="{{ feed.url }}">
+          <span>{{ feed.url }}</span>
+        <input type="number" value="{{ feed.article_count }}" min="1" class="form-control d-inline-block" style="width: 80px;" 
+               onchange="updateArticleCount('{{ feed.url }}', this.value)">
+        <button class="btn btn-danger btn-sm float-right" onclick="removeFeed('{{ feed.url }}')">Remove</button>
+      </li>
+    {% endfor %}
+  </ul>
 </div>
+
+<script>
+function updateArticleCount(url, count) {
+    // AJAX call to update the article count for the feed
+    fetch('/update_feed', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ url: url, article_count: count })
+    });
+}
+
+function removeFeed(url) {
+    fetch('/remove_feed', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ url: url })
+    })
+    .then(response => {
+        if (response.ok) {
+            // Remove the feed entry from the DOM
+            const feedElement = document.querySelector(`.feed-item[data-url="${url}"]`);
+            if (feedElement) {
+                feedElement.remove();
+            }
+        } else {
+            console.error('Failed to remove feed:', response.statusText);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
 {% endblock %}

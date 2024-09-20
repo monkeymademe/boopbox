@@ -1,0 +1,1 @@
+{"feeds": [{"url": "http://feeds.bbci.co.uk/news/rss.xml", "article_count": "1"}, {"url": "https://feeds.skynews.com/feeds/rss/world.xml", "article_count": 5}], "birthdate": "YYYY-MM-DD", "weather_api_key": "your_api_key"}
